@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Question Generator — Buat Soal Pilihan Ganda dengan AI</title>
+    <meta name="description" content="Generator soal pilihan ganda berbasis AI untuk guru. Sesuai Taksonomi Bloom, materi, dan tingkat kesulitan. Gratis, tanpa login.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i data-lucide="brain-circuit" class="logo-icon"></i>
+                    <div>
+                        <h1>AI Question Generator</h1>
+                        <p>Buat soal pilihan ganda dengan AI — sesuai materi, Taksonomi Bloom &amp; tingkat kesulitan</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <!-- ===== KONFIGURASI SOAL ===== -->
+            <section id="config-section" class="panel">
+                <h2 class="panel-title"><i data-lucide="sliders-horizontal"></i> Konfigurasi Soal</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="jenjang">Jenjang</label>
+                        <select id="jenjang">
+                            <option value="SD">SD</option>
+                            <option value="SMP" selected>SMP</option>
+                            <option value="SMA">SMA</option>
+                            <option value="SMK">SMK</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kelas">Kelas</label>
+                        <select id="kelas"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mapel">Mata Pelajaran</label>
+                        <input type="text" id="mapel" placeholder="Contoh: Matematika" value="Matematika">
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- MATERI -->
+                <div class="section-header">
+                    <h3>Materi</h3>
+                    <span id="materi-total" class="badge badge-success">Total: 100% ✓</span>
+                </div>
+                <div id="materi-container" class="materi-list"></div>
+                <button id="add-materi-btn" class="btn btn-secondary btn-small">
+                    <i data-lucide="plus"></i> Tambah Materi
+                </button>
+
+                <hr class="divider">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="jumlah-soal">Jumlah Soal <span class="text-muted">(Maks. 20)</span></label>
+                        <input type="number" id="jumlah-soal" min="1" max="20" value="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty">Tingkat Kesulitan</label>
+                        <select id="difficulty">
+                            <option value="Mixed">Mixed (30% Mudah, 50% Sedang, 20% Sulit)</option>
+                            <option value="Easy">Mudah</option>
+                            <option value="Medium">Sedang</option>
+                            <option value="Hard">Sulit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- BLOOM TAXONOMY -->
+                <div class="section-header">
+                    <h3>Taksonomi Bloom</h3>
+                    <span id="bloom-total" class="badge badge-success">Total: 100% ✓</span>
+                </div>
+                <div class="bloom-grid">
+                    <div class="bloom-item">
+                        <label><strong>C1</strong><br>Mengingat</label>
+                        <div class="input-suffix">
+                            <input type="number" class="bloom-input" data-level="C1" value="10" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    <div class="bloom-item">
+                        <label><strong>C2</strong><br>Memahami</label>
+                        <div class="input-suffix">
+                            <input type="number" class="bloom-input" data-level="C2" value="20" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    <div class="bloom-item">
+                        <label><strong>C3</strong><br>Menerapkan</label>
+                        <div class="input-suffix">
+                            <input type="number" class="bloom-input" data-level="C3" value="30" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    <div class="bloom-item">
+                        <label><strong>C4</strong><br>Menganalisis</label>
+                        <div class="input-suffix">
+                            <input type="number" class="bloom-input" data-level="C4" value="30" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    <div class="bloom-item">
+                        <label><strong>C5</strong><br>Mengevaluasi</label>
+                        <div class="input-suffix">
+                            <input type="number" class="bloom-input" data-level="C5" value="10" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    <div class="bloom-item">
+                        <label><strong>C6</strong><br>Mencipta</label>
+                        <div class="input-suffix">
+                            <input type="number" class="bloom-input" data-level="C6" value="0" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-action">
+                    <button id="generate-btn" class="btn btn-primary btn-large">
+                        <i data-lucide="sparkles"></i> GENERATE SOAL
+                    </button>
+                </div>
+            </section>
+
+            <!-- ===== LOADING OVERLAY ===== -->
+            <div id="loading-overlay" class="loading-overlay hidden">
+                <div class="loading-card">
+                    <div class="spinner"></div>
+                    <h3 id="loading-title">Mempersiapkan Blueprint...</h3>
+                    <p id="loading-desc">Menghitung distribusi soal</p>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <p id="loading-count" class="loading-count"></p>
+                </div>
+            </div>
+
+            <!-- ===== HASIL ===== -->
+            <section id="result-section" class="panel hidden">
+                <div class="result-header">
+                    <div>
+                        <h2 class="panel-title"><i data-lucide="check-circle"></i> Soal Berhasil Dibuat</h2>
+                        <p id="result-subtitle">35 soal siap untuk direview</p>
+                    </div>
+                    <div class="result-actions">
+                        <button id="btn-tab-questions" class="btn btn-tab active">Lembar Soal</button>
+                        <button id="btn-tab-key" class="btn btn-tab">Kunci Jawaban</button>
+                        <button id="btn-tab-kisi" class="btn btn-tab">Kisi-Kisi</button>
+                    </div>
+                </div>
+
+                <!-- Lembar Soal -->
+                <div id="view-questions" class="view-content">
+                    <div class="export-toolbar no-print">
+                        <button class="btn btn-secondary btn-small" onclick="window.print()">
+                            <i data-lucide="printer"></i> Print PDF
+                        </button>
+                        <button class="btn btn-primary btn-small" onclick="window._exportDocx()">
+                            <i data-lucide="file-text"></i> Unduh DOCX
+                        </button>
+                        <button class="btn btn-secondary btn-small" id="regenerate-all-btn">
+                            <i data-lucide="refresh-cw"></i> Regenerate Semua
+                        </button>
+                        <button class="btn btn-secondary btn-small" id="back-config-btn">
+                            <i data-lucide="arrow-left"></i> Konfigurasi Baru
+                        </button>
+                    </div>
+                    <div id="questions-container" class="questions-list"></div>
+                </div>
+
+                <!-- Kunci Jawaban -->
+                <div id="view-key" class="view-content hidden">
+                    <div class="export-toolbar no-print">
+                        <button class="btn btn-secondary btn-small" onclick="window.print()">
+                            <i data-lucide="printer"></i> Print
+                        </button>
+                    </div>
+                    <div id="key-container" class="key-container"></div>
+                </div>
+
+                <!-- Kisi-Kisi -->
+                <div id="view-kisi" class="view-content hidden">
+                    <div class="export-toolbar no-print">
+                        <button class="btn btn-secondary btn-small" onclick="window.print()">
+                            <i data-lucide="printer"></i> Print
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="kisi-table" class="kisi-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Materi</th>
+                                    <th>Level Bloom</th>
+                                    <th>Kesulitan</th>
+                                    <th>Indikator</th>
+                                    <th>Bentuk</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kisi-container"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <h3>Edit Soal</h3>
+            <input type="hidden" id="edit-question-id">
+            <div class="form-group mt-3">
+                <label>Teks Soal</label>
+                <textarea id="edit-question-text" rows="4"></textarea>
+            </div>
+            <div class="form-group mt-3">
+                <label>Pilihan A</label>
+                <input type="text" id="edit-opt-a">
+            </div>
+            <div class="form-group mt-3">
+                <label>Pilihan B</label>
+                <input type="text" id="edit-opt-b">
+            </div>
+            <div class="form-group mt-3">
+                <label>Pilihan C</label>
+                <input type="text" id="edit-opt-c">
+            </div>
+            <div class="form-group mt-3">
+                <label>Pilihan D</label>
+                <input type="text" id="edit-opt-d">
+            </div>
+            <div class="form-group mt-3">
+                <label>Kunci Jawaban</label>
+                <select id="edit-correct-answer">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </div>
+            <div class="form-group mt-3">
+                <label>Indikator</label>
+                <input type="text" id="edit-indicator">
+            </div>
+            <div class="modal-actions mt-4">
+                <button id="cancel-edit-btn" class="btn btn-secondary">Batal</button>
+                <button id="save-edit-btn" class="btn btn-primary">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="engine.js"></script>
+    <script src="app.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

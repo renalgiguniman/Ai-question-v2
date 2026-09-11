@@ -1,0 +1,8 @@
+{
+  "name": "ai-question-generator",
+  "version": "1.0.0",
+  "description": "AI Question Generator for teachers",
+  "dependencies": {
+    "docx": "^8.5.0"
+  }
+}
