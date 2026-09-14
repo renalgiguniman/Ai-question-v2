@@ -79,7 +79,8 @@ function generateBlueprint(config) {
 async function generateQuestionWithAI(blueprintItem, config, retries = 3) {
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            const response = await fetch('/api/generate', {
+            // Ubah rute pemanggilan ke API InferHub yang baru
+            const response = await fetch('/api/inferhub-generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ blueprintItem, config }),
