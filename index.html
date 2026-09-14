@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Question Generator — Buat Soal Pilihan Ganda dengan AI</title>
-    <meta name="description" content="Generator soal pilihan ganda berbasis AI untuk guru. Sesuai Taksonomi Bloom, materi, dan tingkat kesulitan. Gratis, tanpa login.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>AI Question Generator — Buat Soal dengan AI</title>
+    <meta name="description" content="Generator soal berbasis AI untuk guru. Sesuai Taksonomi Bloom, materi, dan tingkat kesulitan. Gratis, tanpa login.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-
 </head>
 <body>
     <div class="app-container">
 
-        <!-- Header -->
+        <!-- ===== HERO HEADER ===== -->
         <header class="app-header">
-            <div class="header-content">
-                <div class="logo">
-                    <i data-lucide="brain-circuit" class="logo-icon"></i>
+            <div class="hero-banner">
+                <div class="hero-left">
+                    <div class="hero-icon-wrap">
+                        <i data-lucide="brain-circuit" class="logo-icon"></i>
+                    </div>
                     <div>
                         <h1>AI Question Generator</h1>
-                        <p>Buat soal pilihan ganda dengan AI — sesuai materi, Taksonomi Bloom &amp; tingkat kesulitan</p>
+                        <p class="hero-sub">Buat soal berkualitas tinggi dengan AI — sesuai Taksonomi Bloom, materi & tingkat kesulitan</p>
                     </div>
+                </div>
+                <div class="hero-badges">
+                    <span class="hero-badge"><i data-lucide="zap" style="width:14px;height:14px;"></i> Cepat</span>
+                    <span class="hero-badge"><i data-lucide="shield-check" style="width:14px;height:14px;"></i> Akurat</span>
+                    <span class="hero-badge"><i data-lucide="download" style="width:14px;height:14px;"></i> Unduh DOCX</span>
                 </div>
             </div>
         </header>
@@ -30,115 +36,179 @@
 
             <!-- ===== KONFIGURASI SOAL ===== -->
             <section id="config-section" class="panel">
-                <h2 class="panel-title"><i data-lucide="sliders-horizontal"></i> Konfigurasi Soal</h2>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="jenjang">Jenjang</label>
-                        <select id="jenjang">
-                            <option value="SD">SD</option>
-                            <option value="SMP" selected>SMP</option>
-                            <option value="SMA">SMA</option>
-                            <option value="SMK">SMK</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="kelas">Kelas</label>
-                        <select id="kelas"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mapel">Mata Pelajaran</label>
-                        <input type="text" id="mapel" placeholder="Contoh: Matematika" value="Matematika">
-                    </div>
-                </div>
-
-                <hr class="divider">
-
-                <!-- MATERI -->
-                <div class="section-header">
-                    <h3>Materi</h3>
-                    <span id="materi-total" class="badge badge-success">Total: 100% ✓</span>
-                </div>
-                <div id="materi-container" class="materi-list"></div>
-                <button id="add-materi-btn" class="btn btn-secondary btn-small">
-                    <i data-lucide="plus"></i> Tambah Materi
-                </button>
-
-                <hr class="divider">
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="jumlah-soal">Jumlah Soal <span class="text-muted">(Maks. 20)</span></label>
-                        <input type="number" id="jumlah-soal" min="1" max="20" value="20">
-                    </div>
-                    <div class="form-group">
-                        <label for="difficulty">Tingkat Kesulitan</label>
-                        <select id="difficulty">
-                            <option value="Mixed">Mixed (30% Mudah, 50% Sedang, 20% Sulit)</option>
-                            <option value="Easy">Mudah</option>
-                            <option value="Medium">Sedang</option>
-                            <option value="Hard">Sulit</option>
-                        </select>
-                    </div>
-                </div>
-
-                <hr class="divider">
-
-                <!-- BLOOM TAXONOMY -->
-                <div class="section-header">
-                    <h3>Taksonomi Bloom</h3>
-                    <span id="bloom-total" class="badge badge-success">Total: 100% ✓</span>
-                </div>
-                <div class="bloom-grid">
-                    <div class="bloom-item">
-                        <label><strong>C1</strong><br>Mengingat</label>
-                        <div class="input-suffix">
-                            <input type="number" class="bloom-input" data-level="C1" value="10" min="0" max="100">
-                            <span>%</span>
+                <!-- STEP 1: Identitas -->
+                <div class="step-block">
+                    <div class="step-label">
+                        <span class="step-number">1</span>
+                        <div>
+                            <h2 class="panel-title"><i data-lucide="book-open"></i> Identitas Soal</h2>
+                            <p class="step-desc">Isi jenjang, kelas, dan mata pelajaran</p>
                         </div>
                     </div>
-                    <div class="bloom-item">
-                        <label><strong>C2</strong><br>Memahami</label>
-                        <div class="input-suffix">
-                            <input type="number" class="bloom-input" data-level="C2" value="20" min="0" max="100">
-                            <span>%</span>
+                    <div class="form-grid three-col">
+                        <div class="form-group">
+                            <label for="jenjang">Jenjang Pendidikan</label>
+                            <select id="jenjang">
+                                <option value="SD">SD</option>
+                                <option value="SMP" selected>SMP</option>
+                                <option value="SMA">SMA</option>
+                                <option value="SMK">SMK</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="bloom-item">
-                        <label><strong>C3</strong><br>Menerapkan</label>
-                        <div class="input-suffix">
-                            <input type="number" class="bloom-input" data-level="C3" value="30" min="0" max="100">
-                            <span>%</span>
+                        <div class="form-group">
+                            <label for="kelas">Kelas</label>
+                            <select id="kelas"></select>
                         </div>
-                    </div>
-                    <div class="bloom-item">
-                        <label><strong>C4</strong><br>Menganalisis</label>
-                        <div class="input-suffix">
-                            <input type="number" class="bloom-input" data-level="C4" value="30" min="0" max="100">
-                            <span>%</span>
-                        </div>
-                    </div>
-                    <div class="bloom-item">
-                        <label><strong>C5</strong><br>Mengevaluasi</label>
-                        <div class="input-suffix">
-                            <input type="number" class="bloom-input" data-level="C5" value="10" min="0" max="100">
-                            <span>%</span>
-                        </div>
-                    </div>
-                    <div class="bloom-item">
-                        <label><strong>C6</strong><br>Mencipta</label>
-                        <div class="input-suffix">
-                            <input type="number" class="bloom-input" data-level="C6" value="0" min="0" max="100">
-                            <span>%</span>
+                        <div class="form-group">
+                            <label for="mapel">Mata Pelajaran</label>
+                            <input type="text" id="mapel" placeholder="Contoh: Matematika" value="Matematika">
                         </div>
                     </div>
                 </div>
 
-                <div class="generate-action">
-                    <button id="generate-btn" class="btn btn-primary btn-large">
-                        <i data-lucide="sparkles"></i> GENERATE SOAL
+                <div class="step-divider"></div>
+
+                <!-- STEP 2: Materi -->
+                <div class="step-block">
+                    <div class="step-label">
+                        <span class="step-number">2</span>
+                        <div>
+                            <h2 class="panel-title"><i data-lucide="layers"></i> Materi</h2>
+                            <p class="step-desc">Tambahkan materi dan alokasi persentase soalnya</p>
+                        </div>
+                    </div>
+                    <div class="materi-header">
+                        <span id="materi-total" class="badge badge-success">Total: 100% ✓</span>
+                    </div>
+                    <div id="materi-container" class="materi-list"></div>
+                    <button id="add-materi-btn" class="btn btn-add-materi">
+                        <i data-lucide="plus-circle"></i> Tambah Materi
                     </button>
                 </div>
+
+                <div class="step-divider"></div>
+
+                <!-- STEP 3: Pengaturan Soal -->
+                <div class="step-block">
+                    <div class="step-label">
+                        <span class="step-number">3</span>
+                        <div>
+                            <h2 class="panel-title"><i data-lucide="settings-2"></i> Pengaturan Soal</h2>
+                            <p class="step-desc">Atur jumlah, bentuk, dan tingkat kesulitan soal</p>
+                        </div>
+                    </div>
+                    <div class="form-grid three-col">
+                        <div class="form-group">
+                            <label for="jumlah-soal">
+                                <i data-lucide="hash" style="width:14px;height:14px;display:inline;"></i>
+                                Jumlah Soal <span class="muted-label">(Maks. 20)</span>
+                            </label>
+                            <input type="number" id="jumlah-soal" min="1" max="20" value="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk-soal">
+                                <i data-lucide="file-pen-line" style="width:14px;height:14px;display:inline;"></i>
+                                Bentuk Soal
+                            </label>
+                            <select id="bentuk-soal">
+                                <option value="Pilihan Ganda">Pilihan Ganda</option>
+                                <option value="Essay">Essay</option>
+                                <option value="Isian Singkat">Isian Singkat</option>
+                                <option value="Benar/Salah">Benar / Salah</option>
+                                <option value="Menjodohkan">Menjodohkan</option>
+                                <option value="Campuran">Campuran (PG + Essay)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="difficulty">
+                                <i data-lucide="gauge" style="width:14px;height:14px;display:inline;"></i>
+                                Tingkat Kesulitan
+                            </label>
+                            <select id="difficulty">
+                                <option value="Mixed">Mixed (30% Mudah, 50% Sedang, 20% Sulit)</option>
+                                <option value="Easy">Mudah</option>
+                                <option value="Medium">Sedang</option>
+                                <option value="Hard">Sulit</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-divider"></div>
+
+                <!-- STEP 4: Taksonomi Bloom -->
+                <div class="step-block">
+                    <div class="step-label">
+                        <span class="step-number">4</span>
+                        <div>
+                            <h2 class="panel-title"><i data-lucide="bar-chart-2"></i> Taksonomi Bloom</h2>
+                            <p class="step-desc">Atur distribusi level kognitif soal (total harus 100%)</p>
+                        </div>
+                    </div>
+                    <div class="bloom-header">
+                        <span id="bloom-total" class="badge badge-success">Total: 100% ✓</span>
+                    </div>
+                    <div class="bloom-grid">
+                        <div class="bloom-item">
+                            <div class="bloom-badge c1">C1</div>
+                            <div class="bloom-name">Mengingat</div>
+                            <div class="input-suffix">
+                                <input type="number" class="bloom-input" data-level="C1" value="10" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <div class="bloom-item">
+                            <div class="bloom-badge c2">C2</div>
+                            <div class="bloom-name">Memahami</div>
+                            <div class="input-suffix">
+                                <input type="number" class="bloom-input" data-level="C2" value="20" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <div class="bloom-item">
+                            <div class="bloom-badge c3">C3</div>
+                            <div class="bloom-name">Menerapkan</div>
+                            <div class="input-suffix">
+                                <input type="number" class="bloom-input" data-level="C3" value="30" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <div class="bloom-item">
+                            <div class="bloom-badge c4">C4</div>
+                            <div class="bloom-name">Menganalisis</div>
+                            <div class="input-suffix">
+                                <input type="number" class="bloom-input" data-level="C4" value="30" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <div class="bloom-item">
+                            <div class="bloom-badge c5">C5</div>
+                            <div class="bloom-name">Mengevaluasi</div>
+                            <div class="input-suffix">
+                                <input type="number" class="bloom-input" data-level="C5" value="10" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <div class="bloom-item">
+                            <div class="bloom-badge c6">C6</div>
+                            <div class="bloom-name">Mencipta</div>
+                            <div class="input-suffix">
+                                <input type="number" class="bloom-input" data-level="C6" value="0" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GENERATE BUTTON -->
+                <div class="generate-action">
+                    <button id="generate-btn" class="btn btn-generate">
+                        <i data-lucide="sparkles"></i>
+                        Generate Soal dengan AI
+                    </button>
+                </div>
+
             </section>
 
             <!-- ===== LOADING OVERLAY ===== -->
@@ -159,7 +229,7 @@
                 <div class="result-header">
                     <div>
                         <h2 class="panel-title"><i data-lucide="check-circle"></i> Soal Berhasil Dibuat</h2>
-                        <p id="result-subtitle">35 soal siap untuk direview</p>
+                        <p id="result-subtitle">20 soal siap untuk direview</p>
                     </div>
                     <div class="result-actions">
                         <button id="btn-tab-questions" class="btn btn-tab active">Lembar Soal</button>

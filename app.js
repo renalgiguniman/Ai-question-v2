@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Validasi jumlah soal
         const totalQ = Number(document.getElementById('jumlah-soal').value);
-        if (totalQ < 1 || totalQ > 35) { alert('Jumlah soal harus antara 1 dan 35.'); return; }
+        if (totalQ < 1 || totalQ > 20) { alert('Jumlah soal harus antara 1 dan 20.'); return; }
 
         currentConfig = {
             jenjang: jenjangSelect.value,
@@ -165,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             materials: [...materials],
             totalQuestions: totalQ,
             difficulty: document.getElementById('difficulty').value,
+            bentukSoal: document.getElementById('bentuk-soal').value,
             bloomDistribution: bloomDist,
         };
 
@@ -266,10 +267,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderQuestions() {
         questionsContainer.innerHTML = '';
+        const bentuk = currentConfig.bentukSoal || 'Pilihan Ganda';
+
         generatedQuestions.forEach(q => {
             const card = document.createElement('div');
             card.className = `question-card${q.locked ? ' locked' : ''}`;
             card.id = `card-${q.id}`;
+
+            // Buat bagian opsi sesuai bentuk soal
+            let optionsHtml = '';
+
+            if (bentuk === 'Pilihan Ganda' || bentuk === 'Campuran') {
+                // Tampilkan 4 opsi, sorot jawaban benar
+                const opsiValid = ['A','B','C','D'].filter(l => q.options[l] && q.options[l] !== '-');
+                optionsHtml = `<div class="q-options">
+                    ${opsiValid.map(letter => `
+                    <div class="q-option teacher-view${q.correctAnswer === letter ? ' correct' : ''}">
+                        <strong>${letter}.</strong> ${escapeHtml(q.options[letter])}
+                    </div>`).join('')}
+                </div>`;
+
+            } else if (bentuk === 'Benar/Salah') {
+                optionsHtml = `<div class="q-options">
+                    <div class="q-option teacher-view${q.correctAnswer === 'A' ? ' correct' : ''}">
+                        <strong>A.</strong> Benar
+                    </div>
+                    <div class="q-option teacher-view${q.correctAnswer === 'B' ? ' correct' : ''}">
+                        <strong>B.</strong> Salah
+                    </div>
+                </div>`;
+
+            } else if (bentuk === 'Menjodohkan') {
+                // Tampilkan dua kolom dari opsi
+                optionsHtml = `<div class="q-match-grid">
+                    <div class="q-match-col">
+                        <div class="q-match-header">Kolom Kiri</div>
+                        ${['A','B','C','D'].map(l => `<div class="q-match-item"><strong>${l}.</strong> ${escapeHtml(q.options[l] && q.options[l] !== '-' ? q.options[l] : '-')}</div>`).join('')}
+                    </div>
+                    <div class="q-match-col">
+                        <div class="q-match-header">Kunci Pasangan</div>
+                        <div class="q-answer-box essay-box">${escapeHtml(q.correctAnswer)}</div>
+                    </div>
+                </div>`;
+
+            } else if (bentuk === 'Essay') {
+                optionsHtml = `<div class="q-answer-section">
+                    <div class="q-answer-label">📝 Panduan Jawaban:</div>
+                    <div class="q-answer-box essay-box">${escapeHtml(q.correctAnswer)}</div>
+                    <div class="q-essay-lines">
+                        <div class="essay-line-label">Ruang Jawaban Siswa:</div>
+                        <div class="essay-lines"></div>
+                    </div>
+                </div>`;
+
+            } else if (bentuk === 'Isian Singkat') {
+                optionsHtml = `<div class="q-answer-section">
+                    <div class="q-answer-label">✅ Jawaban:</div>
+                    <div class="q-answer-box">${escapeHtml(q.correctAnswer)}</div>
+                </div>`;
+            }
+
             card.innerHTML = `
                 <div class="q-header">
                     <div class="q-number">Soal ${q.questionNumber} ${q.locked ? '<span class="badge badge-warning">🔒 Locked</span>' : ''}</div>
@@ -277,15 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="badge badge-primary">${escapeHtml(q.material)}</span>
                         <span class="badge badge-warning">${q.bloomLevel}</span>
                         <span class="badge">${q.difficulty}</span>
+                        <span class="badge badge-primary">${escapeHtml(bentuk)}</span>
                     </div>
                 </div>
                 <div class="q-text">${escapeHtml(q.question)}</div>
-                <div class="q-options">
-                    ${['A','B','C','D'].map(letter => `
-                    <div class="q-option teacher-view${q.correctAnswer === letter ? ' correct' : ''}">
-                        <strong>${letter}.</strong> ${escapeHtml(q.options[letter])}
-                    </div>`).join('')}
-                </div>
+                ${optionsHtml}
                 <div class="q-indicator no-print">
                     <small class="text-muted"><strong>Indikator:</strong> ${escapeHtml(q.indicator)}</small>
                 </div>
@@ -306,16 +359,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderAnswerKey() {
         keyContainer.innerHTML = '';
+        const bentuk = currentConfig.bentukSoal || 'Pilihan Ganda';
+
+        // Untuk essay & isian singkat, tampilkan jawaban sebagai teks, bukan lingkaran
+        const isPGStyle = bentuk === 'Pilihan Ganda' || bentuk === 'Benar/Salah' || bentuk === 'Campuran';
+
+        // Switch class container sesuai tipe
+        if (isPGStyle) {
+            keyContainer.className = 'key-container';
+        } else {
+            keyContainer.className = 'key-container-long';
+        }
+
         generatedQuestions.forEach(q => {
             const item = document.createElement('div');
-            item.className = 'key-item';
-            item.innerHTML = `<span>No ${q.questionNumber}</span><span class="key-answer">${q.correctAnswer}</span>`;
+
+            if (isPGStyle) {
+                // Tampilan lingkaran singkat (A / B / C / D / Benar / Salah)
+                item.className = 'key-item';
+                item.innerHTML = `<span>No ${q.questionNumber}</span><span class="key-answer">${escapeHtml(q.correctAnswer)}</span>`;
+            } else {
+                // Tampilan penuh untuk essay, isian, menjodohkan
+                item.className = 'key-item-long';
+                item.innerHTML = `
+                    <div class="key-item-num">No ${q.questionNumber}</div>
+                    <div class="key-item-ans">${escapeHtml(q.correctAnswer)}</div>`;
+            }
             keyContainer.appendChild(item);
         });
     }
 
     function renderKisiKisi() {
         kisiContainer.innerHTML = '';
+        const bentuk = currentConfig.bentukSoal || 'Pilihan Ganda';
+
         generatedQuestions.forEach(q => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -324,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${q.bloomLevel}</td>
                 <td>${q.difficulty}</td>
                 <td>${escapeHtml(q.indicator)}</td>
-                <td>PG</td>`;
+                <td><span class="badge badge-primary" style="font-size:0.7rem;">${escapeHtml(bentuk)}</span></td>`;
             kisiContainer.appendChild(tr);
         });
     }
