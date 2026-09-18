@@ -9,43 +9,44 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 2, name: 'Peluang', percentage: 30 },
         { id: 3, name: 'Statistika', percentage: 30 },
     ];
+
     let generatedQuestions = [];
     let currentConfig = {};
 
     // ===== DOM REFS =====
-    const jenjangSelect    = document.getElementById('jenjang');
-    const kelasSelect      = document.getElementById('kelas');
-    const materiContainer  = document.getElementById('materi-container');
-    const addMateriBtn     = document.getElementById('add-materi-btn');
-    const materiTotalSpan  = document.getElementById('materi-total');
-    const bloomTotalSpan   = document.getElementById('bloom-total');
-    const bloomInputs      = document.querySelectorAll('.bloom-input');
-    const generateBtn      = document.getElementById('generate-btn');
-    const loadingOverlay   = document.getElementById('loading-overlay');
-    const progressBar      = document.getElementById('progress-bar');
-    const loadingDesc      = document.getElementById('loading-desc');
-    const loadingCount     = document.getElementById('loading-count');
-    const configSection    = document.getElementById('config-section');
-    const resultSection    = document.getElementById('result-section');
-    const resultSubtitle   = document.getElementById('result-subtitle');
+    const jenjangSelect      = document.getElementById('jenjang');
+    const kelasSelect        = document.getElementById('kelas');
+    const materiContainer    = document.getElementById('materi-container');
+    const addMateriBtn       = document.getElementById('add-materi-btn');
+    const materiTotalSpan    = document.getElementById('materi-total');
+    const bloomTotalSpan     = document.getElementById('bloom-total');
+    const bloomInputs        = document.querySelectorAll('.bloom-input');
+    const generateBtn        = document.getElementById('generate-btn');
+    const loadingOverlay     = document.getElementById('loading-overlay');
+    const progressBar        = document.getElementById('progress-bar');
+    const loadingDesc        = document.getElementById('loading-desc');
+    const loadingCount       = document.getElementById('loading-count');
+    const configSection      = document.getElementById('config-section');
+    const resultSection      = document.getElementById('result-section');
+    const resultSubtitle     = document.getElementById('result-subtitle');
     const questionsContainer = document.getElementById('questions-container');
-    const keyContainer     = document.getElementById('key-container');
-    const kisiContainer    = document.getElementById('kisi-container');
-    const backConfigBtn    = document.getElementById('back-config-btn');
-    const regenerateAllBtn = document.getElementById('regenerate-all-btn');
+    const keyContainer       = document.getElementById('key-container');
+    const kisiContainer      = document.getElementById('kisi-container');
+    const backConfigBtn      = document.getElementById('back-config-btn');
+    const regenerateAllBtn   = document.getElementById('regenerate-all-btn');
 
     // Tabs
-    const btnTabQuestions  = document.getElementById('btn-tab-questions');
-    const btnTabKey        = document.getElementById('btn-tab-key');
-    const btnTabKisi       = document.getElementById('btn-tab-kisi');
-    const viewQuestions    = document.getElementById('view-questions');
-    const viewKey          = document.getElementById('view-key');
-    const viewKisi         = document.getElementById('view-kisi');
+    const btnTabQuestions = document.getElementById('btn-tab-questions');
+    const btnTabKey       = document.getElementById('btn-tab-key');
+    const btnTabKisi      = document.getElementById('btn-tab-kisi');
+    const viewQuestions   = document.getElementById('view-questions');
+    const viewKey         = document.getElementById('view-key');
+    const viewKisi        = document.getElementById('view-kisi');
 
     // Edit Modal
-    const editModal        = document.getElementById('edit-modal');
-    const cancelEditBtn    = document.getElementById('cancel-edit-btn');
-    const saveEditBtn      = document.getElementById('save-edit-btn');
+    const editModal   = document.getElementById('edit-modal');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const saveEditBtn   = document.getElementById('save-edit-btn');
 
     // ===== INIT =====
     updateKelasOptions();
@@ -53,488 +54,1562 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== EVENT LISTENERS =====
     jenjangSelect.addEventListener('change', updateKelasOptions);
-    addMateriBtn.addEventListener('click', addMateri);
-    bloomInputs.forEach(inp => inp.addEventListener('input', updateBloomTotal));
-    generateBtn.addEventListener('click', handleGenerate);
-    backConfigBtn.addEventListener('click', () => {
-        resultSection.classList.add('hidden');
-        configSection.classList.remove('hidden');
-    });
-    regenerateAllBtn.addEventListener('click', handleRegenerateAll);
-    btnTabQuestions.addEventListener('click', () => switchTab('questions'));
-    btnTabKey.addEventListener('click',       () => switchTab('key'));
-    btnTabKisi.addEventListener('click',      () => switchTab('kisi'));
-    cancelEditBtn.addEventListener('click',   () => editModal.classList.add('hidden'));
-    saveEditBtn.addEventListener('click', saveEdit);
+
+    addMateriBtn.addEventListener(
+        'click',
+        addMateri
+    );
+
+    bloomInputs.forEach(inp =>
+        inp.addEventListener(
+            'input',
+            updateBloomTotal
+        )
+    );
+
+    generateBtn.addEventListener(
+        'click',
+        handleGenerate
+    );
+
+    backConfigBtn.addEventListener(
+        'click',
+        () => {
+            resultSection.classList.add('hidden');
+            configSection.classList.remove('hidden');
+        }
+    );
+
+    regenerateAllBtn.addEventListener(
+        'click',
+        handleRegenerateAll
+    );
+
+    btnTabQuestions.addEventListener(
+        'click',
+        () => switchTab('questions')
+    );
+
+    btnTabKey.addEventListener(
+        'click',
+        () => switchTab('key')
+    );
+
+    btnTabKisi.addEventListener(
+        'click',
+        () => switchTab('kisi')
+    );
+
+    cancelEditBtn.addEventListener(
+        'click',
+        () => editModal.classList.add('hidden')
+    );
+
+    saveEditBtn.addEventListener(
+        'click',
+        saveEdit
+    );
 
     // ===== KELAS OPTIONS =====
     function updateKelasOptions() {
-        const jenjang = jenjangSelect.value;
+
+        const jenjang =
+            jenjangSelect.value;
+
         kelasSelect.innerHTML = '';
-        const map = { SD: [1,2,3,4,5,6], SMP: [7,8,9], SMA: [10,11,12], SMK: [10,11,12] };
+
+        const map = {
+            SD: [1, 2, 3, 4, 5, 6],
+            SMP: [7, 8, 9],
+            SMA: [10, 11, 12],
+            SMK: [10, 11, 12]
+        };
+
         (map[jenjang] || []).forEach(cls => {
-            const opt = document.createElement('option');
+
+            const opt =
+                document.createElement('option');
+
             opt.value = cls;
-            opt.textContent = `Kelas ${cls}`;
+
+            opt.textContent =
+                `Kelas ${cls}`;
+
             kelasSelect.appendChild(opt);
         });
     }
 
     // ===== MATERI =====
     function renderMateri() {
+
         materiContainer.innerHTML = '';
+
         let total = 0;
+
         materials.forEach(mat => {
-            total += Number(mat.percentage);
-            const row = document.createElement('div');
-            row.className = 'materi-row';
+
+            total += Number(
+                mat.percentage
+            );
+
+            const row =
+                document.createElement('div');
+
+            row.className =
+                'materi-row';
+
             row.innerHTML = `
-                <input type="text" placeholder="Nama Materi" value="${escapeHtml(mat.name)}"
-                    onchange="window._updateMateriName(${mat.id}, this.value)">
+                <input
+                    type="text"
+                    placeholder="Nama Materi"
+                    value="${escapeHtml(mat.name)}"
+                    onchange="window._updateMateriName(${mat.id}, this.value)"
+                >
+
                 <div class="input-suffix">
-                    <input type="number" value="${mat.percentage}" min="0" max="100"
-                        onchange="window._updateMateriPct(${mat.id}, this.value)">
+                    <input
+                        type="number"
+                        value="${mat.percentage}"
+                        min="0"
+                        max="100"
+                        onchange="window._updateMateriPct(${mat.id}, this.value)"
+                    >
                     <span>%</span>
                 </div>
-                <button class="icon-btn danger" onclick="window._deleteMat(${mat.id})">
+
+                <button
+                    class="icon-btn danger"
+                    onclick="window._deleteMat(${mat.id})"
+                >
                     <i data-lucide="trash-2"></i>
-                </button>`;
+                </button>
+            `;
+
             materiContainer.appendChild(row);
         });
+
         lucide.createIcons();
+
         updateMateriBadge(total);
     }
 
-    window._updateMateriName = (id, val) => {
-        const m = materials.find(x => x.id === id);
-        if (m) m.name = val;
+    window._updateMateriName = (
+        id,
+        val
+    ) => {
+
+        const m =
+            materials.find(
+                x => x.id === id
+            );
+
+        if (m) {
+            m.name = val;
+        }
     };
-    window._updateMateriPct = (id, val) => {
-        const m = materials.find(x => x.id === id);
-        if (m) m.percentage = Number(val);
-        const total = materials.reduce((s, x) => s + x.percentage, 0);
+
+    window._updateMateriPct = (
+        id,
+        val
+    ) => {
+
+        const m =
+            materials.find(
+                x => x.id === id
+            );
+
+        if (m) {
+            m.percentage =
+                Number(val);
+        }
+
+        const total =
+            materials.reduce(
+                (s, x) =>
+                    s + Number(x.percentage),
+                0
+            );
+
         updateMateriBadge(total);
     };
-    window._deleteMat = (id) => {
-        materials = materials.filter(x => x.id !== id);
+
+    window._deleteMat = id => {
+
+        materials =
+            materials.filter(
+                x => x.id !== id
+            );
+
         renderMateri();
     };
 
     function addMateri() {
-        materials.push({ id: Date.now(), name: '', percentage: 0 });
+
+        materials.push({
+            id: Date.now(),
+            name: '',
+            percentage: 0
+        });
+
         renderMateri();
     }
 
     function updateMateriBadge(total) {
-        materiTotalSpan.className = total === 100 ? 'badge badge-success' : 'badge badge-warning';
-        materiTotalSpan.textContent = total === 100 ? 'Total: 100% ✓' : `Total: ${total}% ⚠`;
+
+        materiTotalSpan.className =
+            total === 100
+                ? 'badge badge-success'
+                : 'badge badge-warning';
+
+        materiTotalSpan.textContent =
+            total === 100
+                ? 'Total: 100% ✓'
+                : `Total: ${total}% ⚠`;
     }
 
     // ===== BLOOM TOTAL =====
     function updateBloomTotal() {
+
         let total = 0;
-        bloomInputs.forEach(inp => total += Number(inp.value));
-        bloomTotalSpan.className = total === 100 ? 'badge badge-success' : 'badge badge-warning';
-        bloomTotalSpan.textContent = total === 100 ? 'Total: 100% ✓' : `Total: ${total}% ⚠`;
+
+        bloomInputs.forEach(inp => {
+            total += Number(inp.value);
+        });
+
+        bloomTotalSpan.className =
+            total === 100
+                ? 'badge badge-success'
+                : 'badge badge-warning';
+
+        bloomTotalSpan.textContent =
+            total === 100
+                ? 'Total: 100% ✓'
+                : `Total: ${total}% ⚠`;
     }
 
-    // ===== GENERATE =====
+    // =====================================================
+    // GENERATE
+    // =====================================================
     async function handleGenerate() {
-        // Validasi materi
-        const mTotal = materials.reduce((s, m) => s + m.percentage, 0);
-        if (mTotal !== 100) { alert('Distribusi Materi harus tepat 100%.'); return; }
 
-        // Validasi bloom
+        // ===== VALIDASI MATERI =====
+
+        const mTotal =
+            materials.reduce(
+                (s, m) =>
+                    s + Number(m.percentage),
+                0
+            );
+
+        if (mTotal !== 100) {
+
+            alert(
+                'Distribusi Materi harus tepat 100%.'
+            );
+
+            return;
+        }
+
+        // ===== VALIDASI BLOOM =====
+
         let bTotal = 0;
-        const bloomDist = [];
-        bloomInputs.forEach(inp => {
-            const val = Number(inp.value);
-            bTotal += val;
-            bloomDist.push({ level: inp.dataset.level, percentage: val });
-        });
-        if (bTotal !== 100) { alert('Distribusi Taksonomi Bloom harus tepat 100%.'); return; }
 
-        // Validasi jumlah soal
-        const totalQ = Number(document.getElementById('jumlah-soal').value);
-        if (totalQ < 1 || totalQ > 20) { alert('Jumlah soal harus antara 1 dan 20.'); return; }
+        const bloomDist = [];
+
+        bloomInputs.forEach(inp => {
+
+            const val =
+                Number(inp.value);
+
+            bTotal += val;
+
+            bloomDist.push({
+                level:
+                    inp.dataset.level,
+                percentage:
+                    val
+            });
+        });
+
+        if (bTotal !== 100) {
+
+            alert(
+                'Distribusi Taksonomi Bloom harus tepat 100%.'
+            );
+
+            return;
+        }
+
+        // ===== VALIDASI JUMLAH SOAL =====
+
+        const totalQ =
+            Number(
+                document.getElementById(
+                    'jumlah-soal'
+                ).value
+            );
+
+        if (
+            totalQ < 1 ||
+            totalQ > 20
+        ) {
+
+            alert(
+                'Jumlah soal harus antara 1 dan 20.'
+            );
+
+            return;
+        }
+
+        // ===== CONFIG =====
 
         currentConfig = {
-            jenjang: jenjangSelect.value,
-            kelas: kelasSelect.value,
-            mapel: document.getElementById('mapel').value,
-            materials: [...materials],
-            totalQuestions: totalQ,
-            difficulty: document.getElementById('difficulty').value,
-            bentukSoal: document.getElementById('bentuk-soal').value,
-            bloomDistribution: bloomDist,
+
+            jenjang:
+                jenjangSelect.value,
+
+            kelas:
+                kelasSelect.value,
+
+            mapel:
+                document.getElementById(
+                    'mapel'
+                ).value,
+
+            materials:
+                [...materials],
+
+            totalQuestions:
+                totalQ,
+
+            difficulty:
+                document.getElementById(
+                    'difficulty'
+                ).value,
+
+            bentukSoal:
+                document.getElementById(
+                    'bentuk-soal'
+                ).value,
+
+            bloomDistribution:
+                bloomDist
         };
 
-        // Mulai loading
+        // ===== RESET STATE =====
+
         generatedQuestions = [];
-        configSection.classList.add('hidden');
-        resultSection.classList.add('hidden');
-        loadingOverlay.classList.remove('hidden');
-        progressBar.style.width = '0%';
+
+        configSection.classList.add(
+            'hidden'
+        );
+
+        resultSection.classList.add(
+            'hidden'
+        );
+
+        loadingOverlay.classList.remove(
+            'hidden'
+        );
+
+        progressBar.style.width =
+            '0%';
+
+        loadingDesc.textContent =
+            'Menyusun blueprint soal...';
+
+        loadingCount.textContent =
+            '';
 
         try {
-            loadingDesc.textContent = 'Menyusun blueprint soal...';
-            const blueprint = window.AIQEngine.generateBlueprint(currentConfig);
 
-            for (let i = 0; i < blueprint.length; i++) {
-                const item = blueprint[i];
-                loadingDesc.textContent = `Membuat soal ${i + 1} dari ${blueprint.length}...`;
-                loadingCount.textContent = `Materi: ${item.material} | Bloom: ${item.bloomLevel} | Kesulitan: ${item.difficulty}`;
-                progressBar.style.width = `${((i) / blueprint.length) * 100}%`;
+            // =================================================
+            // 1. GENERATE BLUEPRINT
+            // =================================================
 
-                try {
-                    const q = await window.AIQEngine.generateQuestionWithAI(item, currentConfig);
-                    generatedQuestions.push(q);
-                } catch (err) {
-                    generatedQuestions.push({
-                        id: 'err_' + Date.now() + i,
-                        question: `⚠️ Gagal: ${err.message}`,
-                        options: { A: '-', B: '-', C: '-', D: '-' },
-                        correctAnswer: 'A',
-                        indicator: '-',
-                        ...item,
-                        locked: false,
-                        editedByUser: false,
-                    });
-                }
+            const blueprint =
+                window.AIQEngine.generateBlueprint(
+                    currentConfig
+                );
+
+            if (
+                !blueprint ||
+                blueprint.length !== totalQ
+            ) {
+
+                throw new Error(
+                    'Blueprint soal tidak berhasil dibuat dengan benar.'
+                );
             }
 
-            progressBar.style.width = '100%';
-            loadingDesc.textContent = 'Menyiapkan hasil...';
-            loadingCount.textContent = '';
+            console.log(
+                'Blueprint:',
+                blueprint
+            );
+
+            // =================================================
+            // 2. BATCH GENERATION
+            // =================================================
+
+            const BATCH_SIZE = 5;
+
+            const totalBatches =
+                Math.ceil(
+                    blueprint.length /
+                    BATCH_SIZE
+                );
+
+            for (
+                let start = 0;
+                start < blueprint.length;
+                start += BATCH_SIZE
+            ) {
+
+                const batch =
+                    blueprint.slice(
+                        start,
+                        start + BATCH_SIZE
+                    );
+
+                const batchStart =
+                    start + 1;
+
+                const batchEnd =
+                    Math.min(
+                        start + BATCH_SIZE,
+                        blueprint.length
+                    );
+
+                const batchNumber =
+                    Math.floor(
+                        start / BATCH_SIZE
+                    ) + 1;
+
+                // ===== LOADING UI =====
+
+                loadingDesc.textContent =
+                    `Membuat soal ${batchStart}–${batchEnd} dari ${blueprint.length}...`;
+
+                loadingCount.textContent =
+                    `Batch ${batchNumber} dari ${totalBatches} • ${batch.length} soal sekaligus`;
+
+                progressBar.style.width =
+                    `${(start / blueprint.length) * 100}%`;
+
+                console.log(
+                    `Mengirim Batch ${batchNumber}/${totalBatches}:`,
+                    batch
+                );
+
+                // =================================================
+                // 3. KIRIM BATCH KE INFERHUB
+                // =================================================
+
+                try {
+
+                    const questions =
+                        await window.AIQEngine.generateQuestionsBatch(
+                            batch,
+                            currentConfig
+                        );
+
+                    if (
+                        !Array.isArray(
+                            questions
+                        ) ||
+                        questions.length === 0
+                    ) {
+
+                        throw new Error(
+                            'AI tidak mengembalikan soal.'
+                        );
+                    }
+
+                    // =================================================
+                    // 4. SIMPAN HASIL
+                    // =================================================
+
+                    generatedQuestions.push(
+                        ...questions
+                    );
+
+                    console.log(
+                        `Batch ${batchNumber} berhasil:`,
+                        questions
+                    );
+
+                } catch (err) {
+
+                    console.error(
+                        `Batch ${batchNumber} gagal:`,
+                        err
+                    );
+
+                    // =================================================
+                    // 5. JIKA BATCH GAGAL
+                    //    TETAP LANJUT KE BATCH BERIKUTNYA
+                    // =================================================
+
+                    batch.forEach(
+                        (
+                            item,
+                            batchIndex
+                        ) => {
+
+                            generatedQuestions.push({
+
+                                id:
+                                    'err_' +
+                                    Date.now() +
+                                    '_' +
+                                    start +
+                                    '_' +
+                                    batchIndex,
+
+                                question:
+                                    `⚠️ Gagal membuat soal: ${err.message}`,
+
+                                options: {
+                                    A: '-',
+                                    B: '-',
+                                    C: '-',
+                                    D: '-'
+                                },
+
+                                correctAnswer:
+                                    'A',
+
+                                indicator:
+                                    '-',
+
+                                questionNumber:
+                                    item.questionNumber,
+
+                                material:
+                                    item.material,
+
+                                bloomLevel:
+                                    item.bloomLevel,
+
+                                difficulty:
+                                    item.difficulty,
+
+                                locked:
+                                    false,
+
+                                editedByUser:
+                                    false
+                            });
+                        }
+                    );
+                }
+
+                // =================================================
+                // 6. UPDATE PROGRESS
+                // =================================================
+
+                const completed =
+                    Math.min(
+                        start + BATCH_SIZE,
+                        blueprint.length
+                    );
+
+                progressBar.style.width =
+                    `${(completed / blueprint.length) * 100}%`;
+            }
+
+            // =================================================
+            // 7. SELESAI
+            // =================================================
+
+            progressBar.style.width =
+                '100%';
+
+            loadingDesc.textContent =
+                'Menyiapkan hasil...';
+
+            loadingCount.textContent =
+                `${generatedQuestions.length} soal berhasil diproses`;
 
             await sleep(600);
-            loadingOverlay.classList.add('hidden');
-            resultSection.classList.remove('hidden');
-            resultSubtitle.textContent = `${generatedQuestions.length} soal siap untuk direview`;
+
+            loadingOverlay.classList.add(
+                'hidden'
+            );
+
+            resultSection.classList.remove(
+                'hidden'
+            );
+
+            resultSubtitle.textContent =
+                `${generatedQuestions.length} soal siap untuk direview`;
+
             renderResults();
-            switchTab('questions');
+
+            switchTab(
+                'questions'
+            );
 
         } catch (err) {
-            loadingOverlay.classList.add('hidden');
-            configSection.classList.remove('hidden');
-            alert('Terjadi kesalahan: ' + err.message);
+
+            console.error(
+                'Generate error:',
+                err
+            );
+
+            loadingOverlay.classList.add(
+                'hidden'
+            );
+
+            configSection.classList.remove(
+                'hidden'
+            );
+
+            alert(
+                'Terjadi kesalahan: ' +
+                err.message
+            );
         }
     }
 
-    // ===== REGENERATE ALL (unlocked) =====
+    // =====================================================
+    // REGENERATE ALL
+    // =====================================================
     async function handleRegenerateAll() {
-        const unlocked = generatedQuestions.filter(q => !q.locked);
-        if (unlocked.length === 0) { alert('Semua soal terkunci. Tidak ada yang diregenerasi.'); return; }
-        if (!confirm(`${unlocked.length} soal (yang tidak dikunci) akan diregenerasi. Lanjutkan?`)) return;
 
-        loadingOverlay.classList.remove('hidden');
-        resultSection.classList.add('hidden');
-        progressBar.style.width = '0%';
+        const unlocked =
+            generatedQuestions.filter(
+                q => !q.locked
+            );
 
-        for (let i = 0; i < unlocked.length; i++) {
-            const q = unlocked[i];
-            loadingDesc.textContent = `Regenerate soal ${i + 1} dari ${unlocked.length}...`;
-            loadingCount.textContent = `Materi: ${q.material} | Bloom: ${q.bloomLevel}`;
-            progressBar.style.width = `${((i) / unlocked.length) * 100}%`;
+        if (
+            unlocked.length === 0
+        ) {
+
+            alert(
+                'Semua soal terkunci. Tidak ada yang diregenerasi.'
+            );
+
+            return;
+        }
+
+        if (
+            !confirm(
+                `${unlocked.length} soal (yang tidak dikunci) akan diregenerasi. Lanjutkan?`
+            )
+        ) {
+            return;
+        }
+
+        loadingOverlay.classList.remove(
+            'hidden'
+        );
+
+        resultSection.classList.add(
+            'hidden'
+        );
+
+        progressBar.style.width =
+            '0%';
+
+        for (
+            let i = 0;
+            i < unlocked.length;
+            i++
+        ) {
+
+            const q =
+                unlocked[i];
+
+            loadingDesc.textContent =
+                `Regenerate soal ${i + 1} dari ${unlocked.length}...`;
+
+            loadingCount.textContent =
+                `Materi: ${q.material} | Bloom: ${q.bloomLevel}`;
+
+            progressBar.style.width =
+                `${(i / unlocked.length) * 100}%`;
 
             try {
-                const newQ = await window.AIQEngine.generateQuestionWithAI(
-                    { questionNumber: q.questionNumber, material: q.material, bloomLevel: q.bloomLevel, difficulty: q.difficulty },
-                    currentConfig
-                );
-                newQ.id = q.id;
-                const idx = generatedQuestions.findIndex(x => x.id === q.id);
-                if (idx !== -1) generatedQuestions[idx] = newQ;
+
+                const newQ =
+                    await window.AIQEngine.generateQuestionWithAI(
+                        {
+                            questionNumber:
+                                q.questionNumber,
+
+                            material:
+                                q.material,
+
+                            bloomLevel:
+                                q.bloomLevel,
+
+                            difficulty:
+                                q.difficulty
+                        },
+                        currentConfig
+                    );
+
+                newQ.id =
+                    q.id;
+
+                const idx =
+                    generatedQuestions.findIndex(
+                        x => x.id === q.id
+                    );
+
+                if (idx !== -1) {
+                    generatedQuestions[idx] =
+                        newQ;
+                }
+
             } catch (e) {
-                console.error('Gagal regenerate soal', q.questionNumber, e);
+
+                console.error(
+                    'Gagal regenerate soal',
+                    q.questionNumber,
+                    e
+                );
             }
         }
 
-        progressBar.style.width = '100%';
+        progressBar.style.width =
+            '100%';
+
         await sleep(400);
-        loadingOverlay.classList.add('hidden');
-        resultSection.classList.remove('hidden');
+
+        loadingOverlay.classList.add(
+            'hidden'
+        );
+
+        resultSection.classList.remove(
+            'hidden'
+        );
+
         renderResults();
     }
 
-    // ===== RENDER RESULTS =====
+    // =====================================================
+    // RENDER RESULTS
+    // =====================================================
     function renderResults() {
+
         renderQuestions();
+
         renderAnswerKey();
+
         renderKisiKisi();
+
         lucide.createIcons();
     }
 
     function renderQuestions() {
+
         questionsContainer.innerHTML = '';
-        const bentuk = currentConfig.bentukSoal || 'Pilihan Ganda';
+
+        const bentuk =
+            currentConfig.bentukSoal ||
+            'Pilihan Ganda';
 
         generatedQuestions.forEach(q => {
-            const card = document.createElement('div');
-            card.className = `question-card${q.locked ? ' locked' : ''}`;
-            card.id = `card-${q.id}`;
 
-            // Buat bagian opsi sesuai bentuk soal
+            const card =
+                document.createElement(
+                    'div'
+                );
+
+            card.className =
+                `question-card${q.locked ? ' locked' : ''}`;
+
+            card.id =
+                `card-${q.id}`;
+
+            // =================================================
+            // OPTIONS
+            // =================================================
+
             let optionsHtml = '';
 
-            if (bentuk === 'Pilihan Ganda' || bentuk === 'Campuran') {
-                // Tampilkan 4 opsi, sorot jawaban benar
-                const opsiValid = ['A','B','C','D'].filter(l => q.options[l] && q.options[l] !== '-');
-                optionsHtml = `<div class="q-options">
-                    ${opsiValid.map(letter => `
-                    <div class="q-option teacher-view${q.correctAnswer === letter ? ' correct' : ''}">
-                        <strong>${letter}.</strong> ${escapeHtml(q.options[letter])}
-                    </div>`).join('')}
-                </div>`;
+            if (
+                bentuk === 'Pilihan Ganda' ||
+                bentuk === 'Campuran'
+            ) {
 
-            } else if (bentuk === 'Benar/Salah') {
-                optionsHtml = `<div class="q-options">
-                    <div class="q-option teacher-view${q.correctAnswer === 'A' ? ' correct' : ''}">
-                        <strong>A.</strong> Benar
-                    </div>
-                    <div class="q-option teacher-view${q.correctAnswer === 'B' ? ' correct' : ''}">
-                        <strong>B.</strong> Salah
-                    </div>
-                </div>`;
+                const opsiValid =
+                    ['A', 'B', 'C', 'D']
+                        .filter(
+                            l =>
+                                q.options[l] &&
+                                q.options[l] !== '-'
+                        );
 
-            } else if (bentuk === 'Menjodohkan') {
-                // Tampilkan dua kolom dari opsi
-                optionsHtml = `<div class="q-match-grid">
-                    <div class="q-match-col">
-                        <div class="q-match-header">Kolom Kiri</div>
-                        ${['A','B','C','D'].map(l => `<div class="q-match-item"><strong>${l}.</strong> ${escapeHtml(q.options[l] && q.options[l] !== '-' ? q.options[l] : '-')}</div>`).join('')}
-                    </div>
-                    <div class="q-match-col">
-                        <div class="q-match-header">Kunci Pasangan</div>
-                        <div class="q-answer-box essay-box">${escapeHtml(q.correctAnswer)}</div>
-                    </div>
-                </div>`;
+                optionsHtml = `
+                    <div class="q-options">
 
-            } else if (bentuk === 'Essay') {
-                optionsHtml = `<div class="q-answer-section">
-                    <div class="q-answer-label">📝 Panduan Jawaban:</div>
-                    <div class="q-answer-box essay-box">${escapeHtml(q.correctAnswer)}</div>
-                    <div class="q-essay-lines">
-                        <div class="essay-line-label">Ruang Jawaban Siswa:</div>
-                        <div class="essay-lines"></div>
-                    </div>
-                </div>`;
+                        ${opsiValid.map(
+                            letter => `
+                            <div class="q-option teacher-view${q.correctAnswer === letter ? ' correct' : ''}">
+                                <strong>${letter}.</strong>
+                                ${escapeHtml(q.options[letter])}
+                            </div>
+                        `
+                        ).join('')}
 
-            } else if (bentuk === 'Isian Singkat') {
-                optionsHtml = `<div class="q-answer-section">
-                    <div class="q-answer-label">✅ Jawaban:</div>
-                    <div class="q-answer-box">${escapeHtml(q.correctAnswer)}</div>
-                </div>`;
+                    </div>
+                `;
+
+            } else if (
+                bentuk === 'Benar/Salah'
+            ) {
+
+                optionsHtml = `
+                    <div class="q-options">
+
+                        <div class="q-option teacher-view${q.correctAnswer === 'A' ? ' correct' : ''}">
+                            <strong>A.</strong> Benar
+                        </div>
+
+                        <div class="q-option teacher-view${q.correctAnswer === 'B' ? ' correct' : ''}">
+                            <strong>B.</strong> Salah
+                        </div>
+
+                    </div>
+                `;
+
+            } else if (
+                bentuk === 'Menjodohkan'
+            ) {
+
+                optionsHtml = `
+                    <div class="q-match-grid">
+
+                        <div class="q-match-col">
+
+                            <div class="q-match-header">
+                                Kolom Kiri
+                            </div>
+
+                            ${['A','B','C','D']
+                                .map(
+                                    l =>
+                                        `<div class="q-match-item">
+                                            <strong>${l}.</strong>
+                                            ${escapeHtml(
+                                                q.options[l] &&
+                                                q.options[l] !== '-'
+                                                    ? q.options[l]
+                                                    : '-'
+                                            )}
+                                        </div>`
+                                )
+                                .join('')}
+
+                        </div>
+
+                        <div class="q-match-col">
+
+                            <div class="q-match-header">
+                                Kunci Pasangan
+                            </div>
+
+                            <div class="q-answer-box essay-box">
+                                ${escapeHtml(q.correctAnswer)}
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+
+            } else if (
+                bentuk === 'Essay'
+            ) {
+
+                optionsHtml = `
+                    <div class="q-answer-section">
+
+                        <div class="q-answer-label">
+                            📝 Panduan Jawaban:
+                        </div>
+
+                        <div class="q-answer-box essay-box">
+                            ${escapeHtml(q.correctAnswer)}
+                        </div>
+
+                        <div class="q-essay-lines">
+
+                            <div class="essay-line-label">
+                                Ruang Jawaban Siswa:
+                            </div>
+
+                            <div class="essay-lines"></div>
+
+                        </div>
+
+                    </div>
+                `;
+
+            } else if (
+                bentuk === 'Isian Singkat'
+            ) {
+
+                optionsHtml = `
+                    <div class="q-answer-section">
+
+                        <div class="q-answer-label">
+                            ✅ Jawaban:
+                        </div>
+
+                        <div class="q-answer-box">
+                            ${escapeHtml(q.correctAnswer)}
+                        </div>
+
+                    </div>
+                `;
             }
+
+            // =================================================
+            // CARD HTML
+            // =================================================
 
             card.innerHTML = `
+
                 <div class="q-header">
-                    <div class="q-number">Soal ${q.questionNumber} ${q.locked ? '<span class="badge badge-warning">🔒 Locked</span>' : ''}</div>
-                    <div class="q-meta no-print">
-                        <span class="badge badge-primary">${escapeHtml(q.material)}</span>
-                        <span class="badge badge-warning">${q.bloomLevel}</span>
-                        <span class="badge">${q.difficulty}</span>
-                        <span class="badge badge-primary">${escapeHtml(bentuk)}</span>
+
+                    <div class="q-number">
+                        Soal ${q.questionNumber}
+
+                        ${
+                            q.locked
+                                ? '<span class="badge badge-warning">🔒 Locked</span>'
+                                : ''
+                        }
                     </div>
+
+                    <div class="q-meta no-print">
+
+                        <span class="badge badge-primary">
+                            ${escapeHtml(q.material)}
+                        </span>
+
+                        <span class="badge badge-warning">
+                            ${q.bloomLevel}
+                        </span>
+
+                        <span class="badge">
+                            ${q.difficulty}
+                        </span>
+
+                        <span class="badge badge-primary">
+                            ${escapeHtml(bentuk)}
+                        </span>
+
+                    </div>
+
                 </div>
-                <div class="q-text">${escapeHtml(q.question)}</div>
+
+                <div class="q-text">
+                    ${escapeHtml(q.question)}
+                </div>
+
                 ${optionsHtml}
+
                 <div class="q-indicator no-print">
-                    <small class="text-muted"><strong>Indikator:</strong> ${escapeHtml(q.indicator)}</small>
+
+                    <small class="text-muted">
+                        <strong>Indikator:</strong>
+                        ${escapeHtml(q.indicator)}
+                    </small>
+
                 </div>
+
                 <div class="q-actions no-print">
-                    <button class="btn btn-secondary btn-small" onclick="window._editQ('${q.id}')">
-                        <i data-lucide="pencil"></i> Edit
+
+                    <button
+                        class="btn btn-secondary btn-small"
+                        onclick="window._editQ('${q.id}')"
+                    >
+                        <i data-lucide="pencil"></i>
+                        Edit
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="window._toggleLock('${q.id}')">
-                        <i data-lucide="${q.locked ? 'lock' : 'unlock'}"></i> ${q.locked ? 'Unlock' : 'Lock'}
+
+                    <button
+                        class="btn btn-secondary btn-small"
+                        onclick="window._toggleLock('${q.id}')"
+                    >
+                        <i data-lucide="${q.locked ? 'lock' : 'unlock'}"></i>
+                        ${q.locked ? 'Unlock' : 'Lock'}
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="window._regenQ('${q.id}')" ${q.locked ? 'disabled' : ''}>
-                        <i data-lucide="refresh-cw"></i> Regenerate
+
+                    <button
+                        class="btn btn-secondary btn-small"
+                        onclick="window._regenQ('${q.id}')"
+                        ${q.locked ? 'disabled' : ''}
+                    >
+                        <i data-lucide="refresh-cw"></i>
+                        Regenerate
                     </button>
-                </div>`;
-            questionsContainer.appendChild(card);
+
+                </div>
+            `;
+
+            questionsContainer.appendChild(
+                card
+            );
         });
     }
 
+    // =====================================================
+    // ANSWER KEY
+    // =====================================================
     function renderAnswerKey() {
+
         keyContainer.innerHTML = '';
-        const bentuk = currentConfig.bentukSoal || 'Pilihan Ganda';
 
-        // Untuk essay & isian singkat, tampilkan jawaban sebagai teks, bukan lingkaran
-        const isPGStyle = bentuk === 'Pilihan Ganda' || bentuk === 'Benar/Salah' || bentuk === 'Campuran';
+        const bentuk =
+            currentConfig.bentukSoal ||
+            'Pilihan Ganda';
 
-        // Switch class container sesuai tipe
+        const isPGStyle =
+            bentuk === 'Pilihan Ganda' ||
+            bentuk === 'Benar/Salah' ||
+            bentuk === 'Campuran';
+
         if (isPGStyle) {
-            keyContainer.className = 'key-container';
+
+            keyContainer.className =
+                'key-container';
+
         } else {
-            keyContainer.className = 'key-container-long';
+
+            keyContainer.className =
+                'key-container-long';
         }
 
         generatedQuestions.forEach(q => {
-            const item = document.createElement('div');
+
+            const item =
+                document.createElement(
+                    'div'
+                );
 
             if (isPGStyle) {
-                // Tampilan lingkaran singkat (A / B / C / D / Benar / Salah)
-                item.className = 'key-item';
-                item.innerHTML = `<span>No ${q.questionNumber}</span><span class="key-answer">${escapeHtml(q.correctAnswer)}</span>`;
-            } else {
-                // Tampilan penuh untuk essay, isian, menjodohkan
-                item.className = 'key-item-long';
+
+                item.className =
+                    'key-item';
+
                 item.innerHTML = `
-                    <div class="key-item-num">No ${q.questionNumber}</div>
-                    <div class="key-item-ans">${escapeHtml(q.correctAnswer)}</div>`;
+                    <span>
+                        No ${q.questionNumber}
+                    </span>
+
+                    <span class="key-answer">
+                        ${escapeHtml(q.correctAnswer)}
+                    </span>
+                `;
+
+            } else {
+
+                item.className =
+                    'key-item-long';
+
+                item.innerHTML = `
+                    <div class="key-item-num">
+                        No ${q.questionNumber}
+                    </div>
+
+                    <div class="key-item-ans">
+                        ${escapeHtml(q.correctAnswer)}
+                    </div>
+                `;
             }
-            keyContainer.appendChild(item);
+
+            keyContainer.appendChild(
+                item
+            );
         });
     }
 
+    // =====================================================
+    // KISI-KISI
+    // =====================================================
     function renderKisiKisi() {
+
         kisiContainer.innerHTML = '';
-        const bentuk = currentConfig.bentukSoal || 'Pilihan Ganda';
+
+        const bentuk =
+            currentConfig.bentukSoal ||
+            'Pilihan Ganda';
 
         generatedQuestions.forEach(q => {
-            const tr = document.createElement('tr');
+
+            const tr =
+                document.createElement(
+                    'tr'
+                );
+
             tr.innerHTML = `
-                <td>${q.questionNumber}</td>
-                <td>${escapeHtml(q.material)}</td>
-                <td>${q.bloomLevel}</td>
-                <td>${q.difficulty}</td>
-                <td>${escapeHtml(q.indicator)}</td>
-                <td><span class="badge badge-primary" style="font-size:0.7rem;">${escapeHtml(bentuk)}</span></td>`;
-            kisiContainer.appendChild(tr);
+
+                <td>
+                    ${q.questionNumber}
+                </td>
+
+                <td>
+                    ${escapeHtml(q.material)}
+                </td>
+
+                <td>
+                    ${q.bloomLevel}
+                </td>
+
+                <td>
+                    ${q.difficulty}
+                </td>
+
+                <td>
+                    ${escapeHtml(q.indicator)}
+                </td>
+
+                <td>
+                    <span
+                        class="badge badge-primary"
+                        style="font-size:0.7rem;"
+                    >
+                        ${escapeHtml(bentuk)}
+                    </span>
+                </td>
+
+            `;
+
+            kisiContainer.appendChild(
+                tr
+            );
         });
     }
 
-    // ===== ACTIONS =====
-    window._toggleLock = (id) => {
-        const q = generatedQuestions.find(x => x.id === id);
-        if (q) { q.locked = !q.locked; renderResults(); }
-    };
+    // =====================================================
+    // TOGGLE LOCK
+    // =====================================================
+    window._toggleLock = id => {
 
-    window._regenQ = async (id) => {
-        const idx = generatedQuestions.findIndex(x => x.id === id);
-        if (idx === -1 || generatedQuestions[idx].locked) return;
-        const q = generatedQuestions[idx];
-        const card = document.getElementById(`card-${id}`);
-        card.style.opacity = '0.4';
-        card.style.pointerEvents = 'none';
-        try {
-            const newQ = await window.AIQEngine.generateQuestionWithAI(
-                { questionNumber: q.questionNumber, material: q.material, bloomLevel: q.bloomLevel, difficulty: q.difficulty },
-                currentConfig
+        const q =
+            generatedQuestions.find(
+                x => x.id === id
             );
-            newQ.id = id;
-            generatedQuestions[idx] = newQ;
+
+        if (q) {
+
+            q.locked =
+                !q.locked;
+
             renderResults();
-        } catch (err) {
-            alert('Gagal regenerasi: ' + err.message);
-            card.style.opacity = '1';
-            card.style.pointerEvents = '';
         }
     };
 
-    window._editQ = (id) => {
-        const q = generatedQuestions.find(x => x.id === id);
-        if (!q) return;
-        document.getElementById('edit-question-id').value = id;
-        document.getElementById('edit-question-text').value = q.question;
-        document.getElementById('edit-opt-a').value = q.options.A;
-        document.getElementById('edit-opt-b').value = q.options.B;
-        document.getElementById('edit-opt-c').value = q.options.C;
-        document.getElementById('edit-opt-d').value = q.options.D;
-        document.getElementById('edit-correct-answer').value = q.correctAnswer;
-        document.getElementById('edit-indicator').value = q.indicator;
-        editModal.classList.remove('hidden');
-    };
+    // =====================================================
+    // REGENERATE SINGLE QUESTION
+    // =====================================================
+    window._regenQ = async id => {
 
-    function saveEdit() {
-        const id = document.getElementById('edit-question-id').value;
-        const q  = generatedQuestions.find(x => x.id === id);
-        if (!q) return;
-        q.question      = document.getElementById('edit-question-text').value;
-        q.options.A     = document.getElementById('edit-opt-a').value;
-        q.options.B     = document.getElementById('edit-opt-b').value;
-        q.options.C     = document.getElementById('edit-opt-c').value;
-        q.options.D     = document.getElementById('edit-opt-d').value;
-        q.correctAnswer = document.getElementById('edit-correct-answer').value;
-        q.indicator     = document.getElementById('edit-indicator').value;
-        q.editedByUser  = true;
-        editModal.classList.add('hidden');
-        renderResults();
-    }
+        const idx =
+            generatedQuestions.findIndex(
+                x => x.id === id
+            );
 
-    // ===== TABS =====
-    function switchTab(tabName) {
-        btnTabQuestions.classList.toggle('active', tabName === 'questions');
-        btnTabKey.classList.toggle('active',       tabName === 'key');
-        btnTabKisi.classList.toggle('active',      tabName === 'kisi');
-        viewQuestions.classList.toggle('hidden',   tabName !== 'questions');
-        viewKey.classList.toggle('hidden',         tabName !== 'key');
-        viewKisi.classList.toggle('hidden',        tabName !== 'kisi');
-        lucide.createIcons();
-    }
-
-    // ===== DOCX EXPORT (Server-side) =====
-    window._exportDocx = async () => {
-        if (generatedQuestions.length === 0) {
-            alert('Belum ada soal yang di-generate.');
+        if (
+            idx === -1 ||
+            generatedQuestions[idx].locked
+        ) {
             return;
         }
 
-        const btn = document.querySelector('button[onclick="window._exportDocx()"]');
+        const q =
+            generatedQuestions[idx];
+
+        const card =
+            document.getElementById(
+                `card-${id}`
+            );
+
+        card.style.opacity =
+            '0.4';
+
+        card.style.pointerEvents =
+            'none';
+
+        try {
+
+            const newQ =
+                await window.AIQEngine.generateQuestionWithAI(
+                    {
+                        questionNumber:
+                            q.questionNumber,
+
+                        material:
+                            q.material,
+
+                        bloomLevel:
+                            q.bloomLevel,
+
+                        difficulty:
+                            q.difficulty
+                    },
+                    currentConfig
+                );
+
+            newQ.id =
+                id;
+
+            generatedQuestions[idx] =
+                newQ;
+
+            renderResults();
+
+        } catch (err) {
+
+            alert(
+                'Gagal regenerasi: ' +
+                err.message
+            );
+
+            card.style.opacity =
+                '1';
+
+            card.style.pointerEvents =
+                '';
+        }
+    };
+
+    // =====================================================
+    // EDIT QUESTION
+    // =====================================================
+    window._editQ = id => {
+
+        const q =
+            generatedQuestions.find(
+                x => x.id === id
+            );
+
+        if (!q) {
+            return;
+        }
+
+        document.getElementById(
+            'edit-question-id'
+        ).value = id;
+
+        document.getElementById(
+            'edit-question-text'
+        ).value = q.question;
+
+        document.getElementById(
+            'edit-opt-a'
+        ).value = q.options.A;
+
+        document.getElementById(
+            'edit-opt-b'
+        ).value = q.options.B;
+
+        document.getElementById(
+            'edit-opt-c'
+        ).value = q.options.C;
+
+        document.getElementById(
+            'edit-opt-d'
+        ).value = q.options.D;
+
+        document.getElementById(
+            'edit-correct-answer'
+        ).value = q.correctAnswer;
+
+        document.getElementById(
+            'edit-indicator'
+        ).value = q.indicator;
+
+        editModal.classList.remove(
+            'hidden'
+        );
+    };
+
+    // =====================================================
+    // SAVE EDIT
+    // =====================================================
+    function saveEdit() {
+
+        const id =
+            document.getElementById(
+                'edit-question-id'
+            ).value;
+
+        const q =
+            generatedQuestions.find(
+                x => x.id === id
+            );
+
+        if (!q) {
+            return;
+        }
+
+        q.question =
+            document.getElementById(
+                'edit-question-text'
+            ).value;
+
+        q.options.A =
+            document.getElementById(
+                'edit-opt-a'
+            ).value;
+
+        q.options.B =
+            document.getElementById(
+                'edit-opt-b'
+            ).value;
+
+        q.options.C =
+            document.getElementById(
+                'edit-opt-c'
+            ).value;
+
+        q.options.D =
+            document.getElementById(
+                'edit-opt-d'
+            ).value;
+
+        q.correctAnswer =
+            document.getElementById(
+                'edit-correct-answer'
+            ).value;
+
+        q.indicator =
+            document.getElementById(
+                'edit-indicator'
+            ).value;
+
+        q.editedByUser =
+            true;
+
+        editModal.classList.add(
+            'hidden'
+        );
+
+        renderResults();
+    }
+
+    // =====================================================
+    // TABS
+    // =====================================================
+    function switchTab(
+        tabName
+    ) {
+
+        btnTabQuestions.classList.toggle(
+            'active',
+            tabName === 'questions'
+        );
+
+        btnTabKey.classList.toggle(
+            'active',
+            tabName === 'key'
+        );
+
+        btnTabKisi.classList.toggle(
+            'active',
+            tabName === 'kisi'
+        );
+
+        viewQuestions.classList.toggle(
+            'hidden',
+            tabName !== 'questions'
+        );
+
+        viewKey.classList.toggle(
+            'hidden',
+            tabName !== 'key'
+        );
+
+        viewKisi.classList.toggle(
+            'hidden',
+            tabName !== 'kisi'
+        );
+
+        lucide.createIcons();
+    }
+
+    // =====================================================
+    // DOCX EXPORT
+    // =====================================================
+    window._exportDocx = async () => {
+
+        if (
+            generatedQuestions.length === 0
+        ) {
+
+            alert(
+                'Belum ada soal yang di-generate.'
+            );
+
+            return;
+        }
+
+        const btn =
+            document.querySelector(
+                'button[onclick="window._exportDocx()"]'
+            );
+
         if (btn) {
-            btn.disabled = true;
-            btn.textContent = '⏳ Menyiapkan...';
+
+            btn.disabled =
+                true;
+
+            btn.textContent =
+                '⏳ Menyiapkan...';
         }
 
         try {
-            const response = await fetch('/api/export-docx', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    questions: generatedQuestions,
-                    config: currentConfig,
-                }),
-            });
+
+            const response =
+                await fetch(
+                    '/api/export-docx',
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body:
+                            JSON.stringify({
+                                questions:
+                                    generatedQuestions,
+
+                                config:
+                                    currentConfig
+                            })
+                    }
+                );
 
             if (!response.ok) {
-                const err = await response.json().catch(() => ({ error: 'Server error' }));
-                throw new Error(err.error || 'Gagal membuat DOCX di server.');
+
+                const err =
+                    await response
+                        .json()
+                        .catch(
+                            () => ({
+                                error:
+                                    'Server error'
+                            })
+                        );
+
+                throw new Error(
+                    err.error ||
+                    'Gagal membuat DOCX di server.'
+                );
             }
 
-            // Ambil nama file dari header Content-Disposition
-            const disposition = response.headers.get('Content-Disposition') || '';
-            const match = disposition.match(/filename="(.+?)"/);
-            const filename = match ? match[1] : `Soal_${(currentConfig.mapel || 'AI').replace(/\s+/g, '_')}.docx`;
+            const disposition =
+                response.headers.get(
+                    'Content-Disposition'
+                ) || '';
 
-            const blob = await response.blob();
-            const url  = window.URL.createObjectURL(blob);
-            const a    = document.createElement('a');
-            a.href     = url;
-            a.download = filename;
+            const match =
+                disposition.match(
+                    /filename="(.+?)"/
+                );
+
+            const filename =
+                match
+                    ? match[1]
+                    : `Soal_${(
+                        currentConfig.mapel ||
+                        'AI'
+                    ).replace(
+                        /\s+/g,
+                        '_'
+                    )}.docx`;
+
+            const blob =
+                await response.blob();
+
+            const url =
+                window.URL.createObjectURL(
+                    blob
+                );
+
+            const a =
+                document.createElement(
+                    'a'
+                );
+
+            a.href =
+                url;
+
+            a.download =
+                filename;
+
             a.click();
-            window.URL.revokeObjectURL(url);
+
+            window.URL.revokeObjectURL(
+                url
+            );
 
         } catch (err) {
-            console.error('Export DOCX error:', err);
-            alert('Gagal mengunduh DOCX: ' + err.message);
+
+            console.error(
+                'Export DOCX error:',
+                err
+            );
+
+            alert(
+                'Gagal mengunduh DOCX: ' +
+                err.message
+            );
+
         } finally {
+
             if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i data-lucide="file-text"></i> Unduh DOCX';
+
+                btn.disabled =
+                    false;
+
+                btn.innerHTML =
+                    '<i data-lucide="file-text"></i> Unduh DOCX';
+
                 lucide.createIcons();
             }
         }
     };
 
-    // ===== UTILS =====
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-    function escapeHtml(text = '') {
-        return String(text)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+    // =====================================================
+    // UTILS
+    // =====================================================
+    function sleep(ms) {
+        return new Promise(
+            r => setTimeout(r, ms)
+        );
     }
+
+    function escapeHtml(
+        text = ''
+    ) {
+
+        return String(text)
+            .replace(
+                /&/g,
+                '&amp;'
+            )
+            .replace(
+                /</g,
+                '&lt;'
+            )
+            .replace(
+                />/g,
+                '&gt;'
+            )
+            .replace(
+                /"/g,
+                '&quot;'
+            );
+    }
+
 });
