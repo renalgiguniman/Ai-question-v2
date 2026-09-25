@@ -323,6 +323,17 @@ ATURAN WAJIB:
 12. Jangan menghilangkan soal.
 13. Output HARUS berupa JSON valid.
 
+ATURAN RUMUS / EQUATION:
+
+14. Jika konten TIDAK membutuhkan rumus atau notasi khusus, gunakan teks biasa.
+15. Jika konten membutuhkan rumus, persamaan, pecahan, akar, pangkat, indeks, simbol matematika/fisika/kimia/statistika, gunakan LaTeX.
+16. Rumus inline harus dibungkus dengan \\( ... \\), sedangkan rumus satu baris/display harus dibungkus dengan \\[ ... \\].
+17. Karena output HARUS JSON valid, setiap backslash LaTeX WAJIB di-escape dua kali di JSON.
+    Contoh JSON valid:
+    "question": "Hitung \\\\(\\\\frac{3}{4}+\\\\frac{1}{2}\\\\)."
+18. Jangan gunakan delimiter $...$ atau $...$.
+19. Jangan menambahkan equation jika tidak diperlukan.
+
 FORMAT OUTPUT:
 
 {
