@@ -800,6 +800,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderKisiKisi();
 
+        // Render equation/rumus hanya jika delimiter LaTeX ditemukan.
+        // Teks biasa tidak terpengaruh.
+        renderMath(questionsContainer);
+        renderMath(keyContainer);
+        renderMath(kisiContainer);
+
         lucide.createIcons();
     }
 
@@ -1583,6 +1589,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================
     // UTILS
     // =====================================================
+    function renderMath(root) {
+
+        if (
+            !root ||
+            typeof window.renderMathInElement !== 'function'
+        ) {
+            return;
+        }
+
+        window.renderMathInElement(
+            root,
+            {
+                delimiters: [
+                    {
+                        left: '\\(',
+                        right: '\\)',
+                        display: false
+                    },
+                    {
+                        left: '\\[',
+                        right: '\\]',
+                        display: true
+                    }
+                ],
+
+                throwOnError: false,
+                strict: 'ignore'
+            }
+        );
+    }
+
     function sleep(ms) {
         return new Promise(
             r => setTimeout(r, ms)
