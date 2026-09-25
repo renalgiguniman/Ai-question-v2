@@ -58,7 +58,7 @@ export default async function handler(req, res) {
                         {
                             role: 'system',
                             content:
-                                'Anda adalah pembuat soal ujian profesional untuk kurikulum Indonesia (Kurikulum Merdeka). Selalu kembalikan respons dalam format JSON yang valid.'
+                                'Anda adalah pembuat soal ujian profesional untuk kurikulum Indonesia (Kurikulum Merdeka). Selalu kembalikan respons dalam format JSON yang valid. Jika ada rumus/persamaan/notasi eksak, WAJIB bungkus dengan delimiter LaTeX \\( ... \\) atau \\[ ... \\]. Jangan pernah menulis bentuk seperti x^2 atau a/b sebagai teks polos ketika itu bagian dari rumus.'
                         },
                         {
                             role: 'user',
@@ -296,6 +296,10 @@ ATURAN RUMUS / EQUATION:
     "question": "Hitung \\\\(\\\\frac{3}{4}+\\\\frac{1}{2}\\\\)."
 13. Jangan gunakan delimiter $...$ atau $...$.
 14. Jangan menambahkan equation jika tidak diperlukan.
+15. OUTPUT DIANGGAP SALAH jika terdapat simbol matematika seperti ^, =, √, ±, ≤, ≥, pecahan a/b, atau ekspresi aljabar yang berada di luar delimiter LaTeX.
+16. Contoh WAJIB:
+    Teks salah: Persamaan kuadrat x^2 - (m+2)x + m = 0 memiliki akar...
+    Teks benar (di JSON): Persamaan kuadrat \\(x^2 - (m+2)x + m = 0\\) memiliki akar...
 
 Kembalikan HANYA JSON dengan format:
 
