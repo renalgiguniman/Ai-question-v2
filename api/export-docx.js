@@ -44,6 +44,91 @@ function katexToMathML(latex, displayMode = false) {
     }
 }
 
+function normalizeMathMarkup(text = '') {
+    const source = normalizeMathMarkup(text);
+
+    if (
+        source.includes('\\(') ||
+        source.includes('\\[')
+    ) {
+        return source;
+    }
+
+    if (source.includes('=')) {
+        const tokens = source.split(/(\s+)/);
+        const meaningfulIndexes = [];
+
+        tokens.forEach((token, index) => {
+            if (!/^\s+$/.test(token) && token !== '') {
+                meaningfulIndexes.push(index);
+            }
+        });
+
+        const eqTokenIndex =
+            meaningfulIndexes.find(
+                index =>
+                    tokens[index] === '=' ||
+                    tokens[index].includes('=')
+            );
+
+        if (eqTokenIndex !== undefined) {
+            const isOperator = token =>
+                /^[+\-×÷*/=<>≤≥±]+$/.test(token);
+
+            const isMathToken = token => {
+                const cleaned =
+                    token.replace(
+                        /^[,;:]+|[,;:.!?]+$/g,
+                        ''
+                    );
+
+                if (!cleaned) return false;
+                if (isOperator(cleaned)) return true;
+                if (/[\^√∑π∞±≤≥×÷*/(){}\[\]]/.test(cleaned)) return true;
+                if (/^-?\d+(?:[.,]\d+)?$/.test(cleaned)) return true;
+                if (/^[A-Za-z]$/.test(cleaned)) return true;
+                if (
+                    /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9_().+\-^*/]+$/.test(cleaned) ||
+                    /^[A-Za-z0-9_().+\-^*/]+[A-Za-z]$/.test(cleaned)
+                ) return true;
+
+                return false;
+            };
+
+            let left = eqTokenIndex;
+            let right = eqTokenIndex;
+            const eqPos = meaningfulIndexes.indexOf(eqTokenIndex);
+
+            for (let p = eqPos - 1; p >= 0; p--) {
+                const idx = meaningfulIndexes[p];
+                if (!isMathToken(tokens[idx])) break;
+                left = idx;
+            }
+
+            for (let p = eqPos + 1; p < meaningfulIndexes.length; p++) {
+                const idx = meaningfulIndexes[p];
+                if (!isMathToken(tokens[idx])) break;
+                right = idx;
+            }
+
+            if (left < eqTokenIndex && right > eqTokenIndex) {
+                return (
+                    tokens.slice(0, left).join('') +
+                    '\\(' +
+                    tokens.slice(left, right + 1).join('').trim() +
+                    '\\)' +
+                    tokens.slice(right + 1).join('')
+                );
+            }
+        }
+    }
+
+    return source.replace(
+        /\b([A-Za-z0-9_]+(?:\^[A-Za-z0-9{}+\-]+))\b/g,
+        '\\($1\\)'
+    );
+}
+
 function renderTextWithMath(text = '') {
     const source = String(text ?? '');
 
