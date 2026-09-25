@@ -286,6 +286,17 @@ ATURAN:
 7. Jangan menggunakan \`\`\`json.
 8. Pastikan semua tanda kutip JSON valid.
 
+ATURAN RUMUS / EQUATION:
+
+9. Jika konten TIDAK membutuhkan rumus atau notasi khusus, gunakan teks biasa.
+10. Jika konten membutuhkan rumus, persamaan, pecahan, akar, pangkat, indeks, simbol matematika/fisika/kimia/statistika, gunakan LaTeX.
+11. Rumus inline harus dibungkus dengan \\( ... \\), sedangkan rumus satu baris/display harus dibungkus dengan \\[ ... \\].
+12. Karena output HARUS JSON valid, setiap backslash LaTeX WAJIB di-escape dua kali di JSON.
+    Contoh JSON valid:
+    "question": "Hitung \\\\(\\\\frac{3}{4}+\\\\frac{1}{2}\\\\)."
+13. Jangan gunakan delimiter $...$ atau $...$.
+14. Jangan menambahkan equation jika tidak diperlukan.
+
 Kembalikan HANYA JSON dengan format:
 
 ${jsonSchema}
