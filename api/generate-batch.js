@@ -58,7 +58,7 @@ export default async function handler(req, res) {
                         {
                             role: 'system',
                             content:
-                                'Anda adalah pembuat soal ujian profesional untuk kurikulum Indonesia. Selalu kembalikan respons dalam JSON valid.'
+                                'Anda adalah pembuat soal ujian profesional untuk kurikulum Indonesia. Selalu kembalikan respons dalam JSON valid. Jika ada rumus/persamaan/notasi eksak, WAJIB bungkus dengan delimiter LaTeX \\( ... \\) atau \\[ ... \\]. Jangan pernah menulis bentuk seperti x^2 atau a/b sebagai teks polos ketika itu bagian dari rumus.'
                         },
                         {
                             role: 'user',
@@ -322,6 +322,21 @@ ATURAN WAJIB:
 11. Urutan soal HARUS sama dengan urutan daftar.
 12. Jangan menghilangkan soal.
 13. Output HARUS berupa JSON valid.
+
+ATURAN RUMUS / EQUATION:
+
+14. Jika konten TIDAK membutuhkan rumus atau notasi khusus, gunakan teks biasa.
+15. Jika konten membutuhkan rumus, persamaan, pecahan, akar, pangkat, indeks, simbol matematika/fisika/kimia/statistika, gunakan LaTeX.
+16. Rumus inline harus dibungkus dengan \\( ... \\), sedangkan rumus satu baris/display harus dibungkus dengan \\[ ... \\].
+17. Karena output HARUS JSON valid, setiap backslash LaTeX WAJIB di-escape dua kali di JSON.
+    Contoh JSON valid:
+    "question": "Hitung \\\\(\\\\frac{3}{4}+\\\\frac{1}{2}\\\\)."
+18. Jangan gunakan delimiter $...$ atau $...$.
+19. Jangan menambahkan equation jika tidak diperlukan.
+20. OUTPUT DIANGGAP SALAH jika terdapat simbol matematika seperti ^, =, √, ±, ≤, ≥, pecahan a/b, atau ekspresi aljabar yang berada di luar delimiter LaTeX.
+21. Contoh WAJIB:
+    Teks salah: Persamaan kuadrat x^2 - (m+2)x + m = 0 memiliki akar...
+    Teks benar (di JSON): Persamaan kuadrat \\(x^2 - (m+2)x + m = 0\\) memiliki akar...
 
 FORMAT OUTPUT:
 

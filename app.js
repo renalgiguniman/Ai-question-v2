@@ -800,6 +800,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderKisiKisi();
 
+        // Render equation/rumus hanya jika delimiter LaTeX ditemukan.
+        // Teks biasa tidak terpengaruh.
+        renderMath(questionsContainer);
+        renderMath(keyContainer);
+        renderMath(kisiContainer);
+
         lucide.createIcons();
     }
 
@@ -850,7 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             letter => `
                             <div class="q-option teacher-view${q.correctAnswer === letter ? ' correct' : ''}">
                                 <strong>${letter}.</strong>
-                                ${escapeHtml(q.options[letter])}
+                                ${escapeHtml(normalizeMathMarkup(q.options[letter]))}
                             </div>
                         `
                         ).join('')}
@@ -895,10 +901,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                         `<div class="q-match-item">
                                             <strong>${l}.</strong>
                                             ${escapeHtml(
-                                                q.options[l] &&
-                                                q.options[l] !== '-'
-                                                    ? q.options[l]
-                                                    : '-'
+                                                normalizeMathMarkup(
+                                                    q.options[l] &&
+                                                    q.options[l] !== '-'
+                                                        ? q.options[l]
+                                                        : '-'
+                                                )
                                             )}
                                         </div>`
                                 )
@@ -913,7 +921,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
 
                             <div class="q-answer-box essay-box">
-                                ${escapeHtml(q.correctAnswer)}
+                                ${escapeHtml(normalizeMathMarkup(q.correctAnswer))}
                             </div>
 
                         </div>
@@ -933,7 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <div class="q-answer-box essay-box">
-                            ${escapeHtml(q.correctAnswer)}
+                            ${escapeHtml(normalizeMathMarkup(q.correctAnswer))}
                         </div>
 
                         <div class="q-essay-lines">
@@ -961,7 +969,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <div class="q-answer-box">
-                            ${escapeHtml(q.correctAnswer)}
+                            ${escapeHtml(normalizeMathMarkup(q.correctAnswer))}
                         </div>
 
                     </div>
@@ -1009,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="q-text">
-                    ${escapeHtml(q.question)}
+                    ${escapeHtml(normalizeMathMarkup(q.question))}
                 </div>
 
                 ${optionsHtml}
@@ -1104,7 +1112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </span>
 
                     <span class="key-answer">
-                        ${escapeHtml(q.correctAnswer)}
+                        ${escapeHtml(normalizeMathMarkup(q.correctAnswer))}
                     </span>
                 `;
 
@@ -1119,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     <div class="key-item-ans">
-                        ${escapeHtml(q.correctAnswer)}
+                        ${escapeHtml(normalizeMathMarkup(q.correctAnswer))}
                     </div>
                 `;
             }
@@ -1583,6 +1591,173 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================
     // UTILS
     // =====================================================
+    function normalizeMathMarkup(text = '') {
+
+        const source = String(text ?? '');
+
+        // Jika AI sudah memberi delimiter LaTeX, jangan sentuh lagi.
+        if (
+            source.includes('\\(') ||
+            source.includes('\\[')
+        ) {
+            return source;
+        }
+
+        // Fallback deterministik untuk equation yang masih ditulis polos,
+        // contoh:
+        // "Persamaan kuadrat x^2 - (m+2)x + m = 0 memiliki ..."
+        // menjadi:
+        // "Persamaan kuadrat \(x^2 - (m+2)x + m = 0\) memiliki ..."
+        if (source.includes('=')) {
+
+            const tokens =
+                source.split(/(\s+)/);
+
+            const meaningfulIndexes = [];
+
+            tokens.forEach((token, index) => {
+                if (!/^\s+$/.test(token) && token !== '') {
+                    meaningfulIndexes.push(index);
+                }
+            });
+
+            const eqTokenIndex =
+                meaningfulIndexes.find(
+                    index =>
+                        tokens[index] === '=' ||
+                        tokens[index].includes('=')
+                );
+
+            if (eqTokenIndex !== undefined) {
+
+                const isOperator = token =>
+                    /^[+\-×÷*/=<>≤≥±]+$/.test(token);
+
+                const isMathToken = token => {
+                    const cleaned =
+                        token.replace(
+                            /^[,;:]+|[,;:.!?]+$/g,
+                            ''
+                        );
+
+                    if (!cleaned) return false;
+
+                    if (isOperator(cleaned)) return true;
+
+                    if (
+                        /[\^√∑π∞±≤≥×÷*/(){}\[\]]/.test(cleaned)
+                    ) {
+                        return true;
+                    }
+
+                    if (/^-?\d+(?:[.,]\d+)?$/.test(cleaned)) {
+                        return true;
+                    }
+
+                    // Variabel satu huruf: x, y, m, v, t, dst.
+                    if (/^[A-Za-z]$/.test(cleaned)) {
+                        return true;
+                    }
+
+                    // Bentuk seperti 2x, x2, (m+2)x, U_n, x^2.
+                    if (
+                        /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9_().+\-^*/]+$/.test(cleaned) ||
+                        /^[A-Za-z0-9_().+\-^*/]+[A-Za-z]$/.test(cleaned)
+                    ) {
+                        return true;
+                    }
+
+                    return false;
+                };
+
+                let left = eqTokenIndex;
+                let right = eqTokenIndex;
+
+                // Scan token bermakna ke kiri.
+                for (
+                    let p = meaningfulIndexes.indexOf(eqTokenIndex) - 1;
+                    p >= 0;
+                    p--
+                ) {
+                    const idx = meaningfulIndexes[p];
+                    const token = tokens[idx];
+
+                    if (!isMathToken(token)) break;
+                    left = idx;
+                }
+
+                // Scan token bermakna ke kanan.
+                for (
+                    let p = meaningfulIndexes.indexOf(eqTokenIndex) + 1;
+                    p < meaningfulIndexes.length;
+                    p++
+                ) {
+                    const idx = meaningfulIndexes[p];
+                    const token = tokens[idx];
+
+                    if (!isMathToken(token)) break;
+                    right = idx;
+                }
+
+                if (left < eqTokenIndex && right > eqTokenIndex) {
+                    const before =
+                        tokens.slice(0, left).join('');
+
+                    const equation =
+                        tokens.slice(left, right + 1).join('');
+
+                    const after =
+                        tokens.slice(right + 1).join('');
+
+                    return (
+                        before +
+                        '\\(' +
+                        equation.trim() +
+                        '\\)' +
+                        after
+                    );
+                }
+            }
+        }
+
+        // Fallback ringan untuk token berpangkat yang berdiri sendiri.
+        return source.replace(
+            /\b([A-Za-z0-9_]+(?:\^[A-Za-z0-9{}+\-]+))\b/g,
+            '\\($1\\)'
+        );
+    }
+
+    function renderMath(root) {
+
+        if (
+            !root ||
+            typeof window.renderMathInElement !== 'function'
+        ) {
+            return;
+        }
+
+        window.renderMathInElement(
+            root,
+            {
+                delimiters: [
+                    {
+                        left: '\\(',
+                        right: '\\)',
+                        display: false
+                    },
+                    {
+                        left: '\\[',
+                        right: '\\]',
+                        display: true
+                    }
+                ],
+
+                throwOnError: false,
+                strict: 'ignore'
+            }
+        );
+    }
+
     function sleep(ms) {
         return new Promise(
             r => setTimeout(r, ms)
